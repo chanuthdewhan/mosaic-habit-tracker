@@ -4,9 +4,11 @@ import AuthFooter from "@/components/auth/AuthFooter";
 import Button from "@/components/ui/Button";
 import InputField from "@/components/ui/InputField";
 import { SocialButton } from "@/components/ui/SocialButton";
+import { useLoader } from "@/hooks/useLoader";
+import { registerUser } from "@/services/authService";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 /**
  * SignUpScreen handles new user registration.
@@ -18,12 +20,36 @@ export default function SignUpScreen() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmassword, setConfirmPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const { isLoading, showLoader, hideLoader } = useLoader();
 
   // Sign up with email/password
-  const handleSignUp = () => {
-    console.log("Sign up:", firstName, lastName, email, password);
-    router.replace("/(tabs)"); // Navigate to main app after successful registration
+  const handleSignUp = async () => {
+    console.log("Sign uasync p:", firstName, lastName, email, password);
+
+    if (isLoading) {
+      return;
+    }
+
+    if (!firstName || !lastName || !email || !password) {
+      Alert.alert("Please fill all fields...!");
+    }
+
+    if (password != confirmPassword) {
+      Alert.alert("Password not match...!");
+    }
+
+    try {
+      showLoader();
+      await registerUser(firstName, lastName, email, password);
+      Alert.alert("Account created...!");
+      router.replace("/(tabs)"); // Navigate to main app after successful registration
+    } catch (err) {
+      Alert.alert("Registration failed");
+    } finally {
+      hideLoader();
+    }
   };
 
   // Sign up with Google (placeholder)
@@ -67,7 +93,7 @@ export default function SignUpScreen() {
           label="Confirm Password"
           placeholder="Confirm password"
           isPassword
-          value={confirmassword}
+          value={confirmPassword}
           onChangeText={setConfirmPassword}
         />
 

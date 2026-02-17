@@ -4,9 +4,11 @@ import AuthFooter from "@/components/auth/AuthFooter";
 import Button from "@/components/ui/Button";
 import InputField from "@/components/ui/InputField";
 import { SocialButton } from "@/components/ui/SocialButton";
+import { useLoader } from "@/hooks/useLoader";
+import { login } from "@/services/authService";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Alert, Text, TouchableOpacity, View } from "react-native";
 
 /**
  * SignInScreen handles user authentication.
@@ -16,11 +18,30 @@ export default function SignInScreen() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { isLoading, showLoader, hideLoader } = useLoader();
 
   // Sign in with email/password
-  const handleSignIn = () => {
-    console.log("Sign in:", email, password);
-    router.replace("/(tabs)");
+  const handleSignIn = async () => {
+    console.log("Sign iasync n:", email, password);
+
+    if (isLoading) {
+      return;
+    }
+
+    if (!email || !password) {
+      Alert.alert("Please fill all fields...!");
+    }
+
+    try {
+      showLoader();
+      await login(email, password);
+      Alert.alert("Logged In...!");
+      router.replace("/(tabs)");
+    } catch (err) {
+      Alert.alert("Registration failed");
+    } finally {
+      hideLoader();
+    }
   };
 
   // Sign in with Google

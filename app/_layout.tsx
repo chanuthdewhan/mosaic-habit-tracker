@@ -1,3 +1,5 @@
+import { AuthProvider } from "@/context/AuthContext";
+import { LoaderProvider } from "@/context/LoaderContext";
 import {
   Inter_400Regular,
   Inter_500Medium,
@@ -45,11 +47,15 @@ export default function RootLayout() {
   }
 
   return (
-    <View className="flex-1" style={{ marginTop: insets.top }}>
-      {/* Set status bar style based on theme */}
-      <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
-      {/* Renders current route */}
-      <Slot />
-    </View>
+    <LoaderProvider>
+      <AuthProvider>
+        <View className="flex-1" style={{ marginTop: insets.top }}>
+          {/* Set status bar style based on theme */}
+          <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
+          {/* Renders current route */}
+          <Slot />
+        </View>
+      </AuthProvider>
+    </LoaderProvider>
   );
 }
