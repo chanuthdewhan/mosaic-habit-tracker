@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -37,7 +36,7 @@ export const registerUser = async (
 
 export const logout = async () => {
   await signOut(auth);
-  await AsyncStorage.clear();
+  // await AsyncStorage.clear();
 
   // AsyncStorage.setItem("key", {})
   // AsyncStorage.getItem("key")
