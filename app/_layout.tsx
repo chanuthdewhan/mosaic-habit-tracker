@@ -12,13 +12,14 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
-import { Slot, SplashScreen } from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useColorScheme } from "nativewind";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { HabitProvider } from "@/context/HabitContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import "../global.css";
 
@@ -77,22 +78,36 @@ export default function RootLayout() {
   return (
     <LoaderProvider>
       <AuthProvider>
-        <ThemeProvider
-          value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
-        >
-          <View
-            className="flex-1 bg-background-light dark:bg-background-dark"
-            style={{ marginTop: insets.top }}
+        <HabitProvider>
+          <ThemeProvider
+            value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
           >
-            {/* Set status bar style based on theme */}
-            <StatusBar
-              style={colorScheme === "dark" ? "light" : "dark"}
-              backgroundColor={colorScheme === "dark" ? "#121212" : "#f8f7f5"}
-            />
-            {/* Renders current route */}
-            <Slot />
-          </View>
-        </ThemeProvider>
+            <View
+              className="flex-1 bg-background-light dark:bg-background-dark"
+              style={{ marginTop: insets.top }}
+            >
+              {/* Set status bar style based on theme */}
+              <StatusBar
+                style={colorScheme === "dark" ? "light" : "dark"}
+                backgroundColor={colorScheme === "dark" ? "#121212" : "#f8f7f5"}
+              />
+
+              {/* Root app navigation (tabs + modal screens) */}
+              <Stack screenOptions={{ headerShown: false }}>
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen
+                  name="add-habit"
+                  options={{
+                    presentation: "modal",
+                    animation: "slide_from_bottom",
+                    gestureEnabled: true,
+                    fullScreenGestureEnabled: true,
+                  }}
+                />
+              </Stack>
+            </View>
+          </ThemeProvider>
+        </HabitProvider>
       </AuthProvider>
     </LoaderProvider>
   );
