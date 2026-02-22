@@ -5,6 +5,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const tabs = [
   { name: "index", title: "Today", icon: "dashboard" },
+  { name: "analytics", title: "Analytics", icon: "bar-chart" },
   { name: "profile", title: "Profile", icon: "person" },
 ] as const;
 
