@@ -22,8 +22,6 @@ export default function SignInScreen() {
 
   // Sign in with email/password
   const handleSignIn = async () => {
-    console.log("Sign iasync n:", email, password);
-
     if (isLoading) {
       return;
     }
@@ -35,7 +33,6 @@ export default function SignInScreen() {
     try {
       showLoader();
       await login(email, password);
-      Alert.alert("Logged In...!");
       router.replace("/(tabs)");
     } catch (err) {
       Alert.alert("Registration failed");

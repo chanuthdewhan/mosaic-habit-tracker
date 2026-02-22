@@ -26,8 +26,6 @@ export default function SignUpScreen() {
 
   // Sign up with email/password
   const handleSignUp = async () => {
-    console.log("Sign uasync p:", firstName, lastName, email, password);
-
     if (isLoading) {
       return;
     }
@@ -43,7 +41,6 @@ export default function SignUpScreen() {
     try {
       showLoader();
       await registerUser(firstName, lastName, email, password);
-      Alert.alert("Account created...!");
       router.replace("/(tabs)"); // Navigate to main app after successful registration
     } catch (err) {
       Alert.alert("Registration failed");
