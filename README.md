@@ -1,4 +1,4 @@
-# <img src="assets/images/splash-icon-light.png" width="128" height="128" style="vertical-align:middle"/> Mosaic
+# <img src="assets/images/icon.png" width="32" height="32" style="vertical-align:middle"/> Mosaic
 
 > **Build habits. Track streaks. See your consistency come together.**
 
