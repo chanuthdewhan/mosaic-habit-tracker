@@ -6,8 +6,8 @@ import { useHabits } from "@/context/HabitContext";
 import { useAuth } from "@/hooks/useAuth";
 import { getUserData } from "@/services/userService";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -42,7 +42,7 @@ function getTodayLabel() {
 export default function HomeScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const {
     habits,
     loading,
@@ -54,11 +54,12 @@ export default function HomeScreen() {
 
   const [userData, setUserData] = useState<any>(null);
 
-  useEffect(() => {
-    if (user?.uid) {
-      getUserData(user.uid).then(setUserData);
-    }
-  }, [user?.uid]);
+  useFocusEffect(
+    useCallback(() => {
+      refreshUser();
+      if (user?.uid) getUserData(user.uid).then(setUserData);
+    }, [user?.uid]),
+  );
 
   const completedCount = habits.filter((h) => isCompletedToday(h.id)).length;
 
@@ -117,7 +118,14 @@ export default function HomeScreen() {
                 resizeMode="cover"
               />
             ) : (
-              <Ionicons name="person-outline" size={20} color="#9ca3af" />
+              // <Ionicons name="person-outline" size={20} color="#9ca3af" />
+              <View className="w-32 h-32 rounded-full border-2 border-primary bg-slate-200 dark:bg-[#1a1a1a] items-center justify-center">
+                <Text className="text-2xl font-bold text-primary">
+                  {userData?.firstName?.charAt(0).toUpperCase() ??
+                    user?.email?.charAt(0).toUpperCase() ??
+                    "?"}
+                </Text>
+              </View>
             )}
           </TouchableOpacity>
         </View>

@@ -1,3 +1,4 @@
+import EditProfileModal from "@/components/profile/EditProfileModal";
 import SettingsIconBox from "@/components/settings/SettingsIconBox";
 import SettingsListItem from "@/components/settings/SettingsListItem";
 import SettingsSection from "@/components/settings/SettingsSection";
@@ -19,7 +20,6 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 /**
  * ProfileScreen shows user info and app settings.
  * Covers preferences, account actions, and logout.
@@ -33,8 +33,9 @@ export default function ProfileScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [statsWidget, setStatsWidget] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const [userData, setUserData] = useState<any>(null);
 
   useEffect(() => {
@@ -42,6 +43,11 @@ export default function ProfileScreen() {
       getUserData(user.uid).then(setUserData);
     }
   }, [user?.uid]);
+
+  const refreshUserData = async () => {
+    await refreshUser();
+    if (user?.uid) getUserData(user.uid).then(setUserData);
+  };
 
   const handleToggleTheme = async () => {
     const newTheme = colorScheme === "dark" ? "light" : "dark";
@@ -119,23 +125,30 @@ export default function ProfileScreen() {
         {/* Profile Header */}
         <View className="items-center px-8 pt-8 pb-4 gap-3">
           <View className="relative">
-            <Image
-              source={{
-                uri: "https://lh3.googleusercontent.com/aida-public/AB6AXuCkWyE864Z9cKAF5RYYv3WG-xGFhI9swYTggjpVManyvTi7rJiLKBg4_du2TJW8y8UgOU_P0zzM_RfPRXiZTl3vp7Z1a-GSArlISLdAnEqtf1BEANJwS3m9ceQVubdU3DOWtmFj241fmEf_y4atjo9qc5pKPB9nSc11NHe1f7kITerrWeZuaO9Ehz4g8hLVBzGpa_anBSh3XbUKmo6Tgfg8Vkp_mP9lSL5t9FeqzEAuT0c6zhF8oR4NAdFoNkupkRuW-7fUQeXnt3w",
-              }}
-              className="w-32 h-32 rounded-full border-2 border-primary"
-              resizeMode="cover"
-            />
-            {/* TODO: open image picker on press */}
+            {user?.photoURL ? (
+              <Image
+                source={{ uri: user.photoURL }}
+                className="w-32 h-32 rounded-full border-2 border-primary"
+                resizeMode="cover"
+              />
+            ) : (
+              <View className="w-32 h-32 rounded-full border-2 border-primary bg-slate-200 dark:bg-[#1a1a1a] items-center justify-center">
+                <Text className="text-4xl font-bold text-primary">
+                  {userData?.firstName?.charAt(0).toUpperCase() ??
+                    user?.email?.charAt(0).toUpperCase() ??
+                    "?"}
+                </Text>
+              </View>
+            )}
+
             <TouchableOpacity
               className="absolute bottom-1 right-1 bg-primary p-1.5 rounded-full border-4 border-background-light dark:border-background-dark items-center justify-center"
-              onPress={() => {}}
+              onPress={() => setShowEditModal(true)}
             >
               <Ionicons name="pencil" size={14} color="white" />
             </TouchableOpacity>
           </View>
 
-          {/* hardcoded until user profile API is wired up */}
           <View className="items-center gap-1">
             <Text className="text-gray-900 dark:text-white text-2xl font-bold text-center">
               {userData
@@ -148,7 +161,6 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        {/* Preferences */}
         <SettingsSection title="Preferences">
           <SettingsListItem
             icon={
@@ -207,7 +219,6 @@ export default function ProfileScreen() {
           />
         </SettingsSection>
 
-        {/* Account */}
         <SettingsSection title="Account">
           <SettingsListItem
             icon={
@@ -265,6 +276,12 @@ export default function ProfileScreen() {
           </Text>
         </View>
       </ScrollView>
+
+      <EditProfileModal
+        visible={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSaved={refreshUserData}
+      />
     </View>
   );
 }
