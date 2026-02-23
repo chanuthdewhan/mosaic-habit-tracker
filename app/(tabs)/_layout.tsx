@@ -10,7 +10,7 @@ const tabs = [
   { name: "profile", title: "Profile", icon: "person" },
 ] as const;
 
-const DashboardLayout = () => {
+const TabLayout = () => {
   const router = useRouter();
   const segments = useSegments();
   const insets = useSafeAreaInsets();
@@ -34,6 +34,10 @@ const DashboardLayout = () => {
             options={{
               title: title,
               tabBarStyle: name === "profile" ? { display: "none" } : undefined,
+              tabBarItemStyle: {
+                marginRight: name === "analytics" ? 25 : 0,
+                marginLeft: name === "(habits)" ? 25 : 0,
+              },
               tabBarIcon: ({ color, size }) => (
                 <MaterialIcons name={icon} size={size} color={color} />
               ),
@@ -47,7 +51,7 @@ const DashboardLayout = () => {
           onPress={() => router.push("/add-habit")}
           style={{
             position: "absolute",
-            bottom: insets.bottom + 20,
+            bottom: insets.bottom + 15,
             alignSelf: "center",
             width: 50,
             height: 50,
@@ -69,4 +73,4 @@ const DashboardLayout = () => {
   );
 };
 
-export default DashboardLayout;
+export default TabLayout;
