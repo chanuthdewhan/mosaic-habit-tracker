@@ -35,7 +35,7 @@ export default function SignInScreen() {
       await login(email, password);
       router.replace("/(tabs)");
     } catch (err) {
-      Alert.alert("Registration failed");
+      Alert.alert("Sign-In failed");
     } finally {
       hideLoader();
     }

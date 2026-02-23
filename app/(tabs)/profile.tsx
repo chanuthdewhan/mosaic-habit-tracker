@@ -1,10 +1,11 @@
+import ConfirmPasswordModal from "@/components/profile/ConfirmPasswordModal";
 import EditProfileModal from "@/components/profile/EditProfileModal";
 import SettingsIconBox from "@/components/settings/SettingsIconBox";
 import SettingsListItem from "@/components/settings/SettingsListItem";
 import SettingsSection from "@/components/settings/SettingsSection";
 import { useAuth } from "@/hooks/useAuth";
 import { useLoader } from "@/hooks/useLoader";
-import { logout } from "@/services/authService";
+import { deleteAccount, logout } from "@/services/authService";
 import { getUserData } from "@/services/userService";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -34,6 +35,7 @@ export default function ProfileScreen() {
   const [hapticEnabled, setHapticEnabled] = useState(true);
   const [statsWidget, setStatsWidget] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const { user, refreshUser } = useAuth();
   const [userData, setUserData] = useState<any>(null);
@@ -84,21 +86,23 @@ export default function ProfileScreen() {
     ]);
   };
 
-  // TODO: wire up actual account deletion endpoint
   const handleDeleteAccount = () => {
     Alert.alert(
       "Delete Account",
-      "This action is permanent and cannot be undone.",
+      "This action is permanent and cannot be undone. All your habits and data will be deleted.",
       [
         { text: "Cancel", style: "cancel" },
-        { text: "Delete", style: "destructive", onPress: () => {} },
+        {
+          text: "Delete",
+          style: "destructive",
+          onPress: () => setShowDeleteModal(true),
+        },
       ],
     );
   };
 
   return (
     <View className="flex-1 bg-background-light dark:bg-background-dark">
-      {/* Top App Bar */}
       <View className="flex-row items-center px-4 py-3 justify-between border-b border-gray-200 dark:border-white/5 bg-background-light/80 dark:bg-background-dark/80">
         <TouchableOpacity
           onPress={() => router.back()}
@@ -122,7 +126,6 @@ export default function ProfileScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ paddingBottom: insets.bottom }}
       >
-        {/* Profile Header */}
         <View className="items-center px-8 pt-8 pb-4 gap-3">
           <View className="relative">
             {user?.photoURL ? (
@@ -281,6 +284,20 @@ export default function ProfileScreen() {
         visible={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSaved={refreshUserData}
+      />
+
+      <ConfirmPasswordModal
+        visible={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        title="Delete Account"
+        message="Enter your password to permanently delete your account. This cannot be undone."
+        confirmLabel="Delete Account"
+        onConfirm={async (password) => {
+          showLoader();
+          await deleteAccount(password);
+          hideLoader();
+          router.replace("/(auth)");
+        }}
       />
     </View>
   );
