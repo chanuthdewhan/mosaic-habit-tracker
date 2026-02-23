@@ -9,6 +9,17 @@ import { login } from "@/services/authService";
 import { Link, useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
+import * as Notifications from "expo-notifications";
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
 
 /**
  * SignInScreen handles user authentication.
@@ -27,15 +38,44 @@ export default function SignInScreen() {
     }
 
     if (!email || !password) {
-      Alert.alert("Please fill all fields...!");
+      Alert.alert("Missing Fields", "Please fill all fields...!");
+      return;
     }
 
     try {
       showLoader();
       await login(email, password);
+
+      const { status: existingStatus } =
+        await Notifications.getPermissionsAsync();
+      let finalStatus = existingStatus;
+
+      if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+      }
+
+      if (finalStatus === "granted") {
+        try {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: "Welcome back! 👋",
+              body: "Let's crush your habits today.",
+              sound: true,
+            },
+            trigger: null,
+          });
+        } catch (e) {
+          console.log("Notifications bypassed in Expo Go");
+        }
+      }
+
       router.replace("/(tabs)");
     } catch (err) {
-      Alert.alert("Sign-In failed");
+      Alert.alert(
+        "Sign-In failed",
+        "Please check your credentials and try again.",
+      );
     } finally {
       hideLoader();
     }
