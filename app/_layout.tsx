@@ -94,7 +94,7 @@ export default function RootLayout() {
 
               {/* Root app navigation (tabs + modal screens) */}
               <Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="index" />
                 <Stack.Screen
                   name="add-habit"
                   options={{

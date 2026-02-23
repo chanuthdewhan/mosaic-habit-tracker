@@ -231,7 +231,7 @@ export default function ProfileScreen() {
               </SettingsIconBox>
             }
             label="Change Password"
-            onPress={() => {}}
+            onPress={() => router.push("/new-password")}
           />
           <SettingsListItem
             icon={

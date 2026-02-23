@@ -68,7 +68,10 @@ export default function SignInScreen() {
         />
 
         <View className="items-end">
-          <TouchableOpacity className="py-1">
+          <TouchableOpacity
+            className="py-1"
+            onPress={() => router.push("/forgot-password")}
+          >
             <Text className="text-xs font-semibold text-primary">
               Forgot Password?
             </Text>
@@ -86,7 +89,7 @@ export default function SignInScreen() {
         <Text className="text-gray-500 dark:text-gray-400 text-sm">
           Don't have an account?
         </Text>
-        <Link href="/(auth)/sign-up" asChild>
+        <Link href="/sign-up" asChild>
           <TouchableOpacity>
             <Text className="text-primary font-semibold text-sm">Sign Up</Text>
           </TouchableOpacity>
